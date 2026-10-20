@@ -1,0 +1,57 @@
+# Which model does what. Model AND version are pinned here and copied into every run's manifest.
+# Switch with: uv run video "idea" --profile dev|premium|premium-openrouter|real-no-video
+
+dev:  # free and offline: fake providers render real media with ffmpeg
+  llm:   { provider: fake, model: fake-llm, version: "1" }
+  tts:   { provider: fake, model: sine, version: "1" }
+  stt:   { provider: fake, model: sidecar, version: "1" }
+  video: { provider: fake, model: testsrc, version: "1" }
+  image: { provider: fake, model: solid, version: "1" }  # used only if video needs_image
+
+premium:  # real models; keys in .env
+  # version = the exact model code sent to the API (ai.google.dev)
+  llm:   { provider: gemini, model: gemini-3.8-flash, version: "gemini-3.8-flash" }
+  # ElevenLabs TTS is the default: its free tier allows ~10k characters/month, Gemini TTS free
+  # 10 requests/day. version = the exact model_id sent. Alternative, still
+  # registered (Ukrainian not in its official list):
+  # tts: { provider: gemini-tts, model: gemini-3.8-flash-tts, version: "gemini-3.8-flash-tts" }
+  tts:   { provider: elevenlabs-tts, model: eleven_v4, version: eleven_v4 }
+  # ElevenLabs Scribe; version = the exact model_id sent (live call)
+  stt:   { provider: scribe, model: scribe, version: scribe_v2 }
+  # Seedance 2.5 takes our audio without an image (<=30 s). "2.0" also works but needs an image
+  # with audio and is capped at 15 s — the adapter declares that, shot_1 checks it before paying.
+  # model = the exact model id sent (3rd-party source, not yet confirmed live — no ARK key);
+  # version selects the adapter's capabilities ("2.5" | "2.0").
+  video: { provider: seedance, model: dreamina-seedance-2-5-260628, version: "2.5" }
+  # soft signal only (quality_check); final.mp4 sent inline at 2 fps
+  judge: { provider: gemini, model: gemini-3.8-flash, version: "gemini-3.8-flash" }
+
+premium-openrouter:  # premium, but Seedance 2.5 via OpenRouter (OPENROUTER_API_KEY)
+  llm:   { provider: gemini, model: gemini-3.8-flash, version: "gemini-3.8-flash" }
+  tts:   { provider: elevenlabs-tts, model: eleven_v4, version: eleven_v4 }
+  stt:   { provider: scribe, model: scribe, version: scribe_v2 }
+  # model = the OpenRouter slug sent; version selects the adapter's capabilities
+  # ("2.5" | "2.0" | "2.0-fast"). Both lip-sync OUR audio only when audio and image go
+  # together (the image role below). Live, 2.5 + image: English SyncNet 8.6 "good",
+  # Ukrainian 1.9 (3.0 after per-phrase alignment); 480p 5 s 0.52 USD.
+  # Resolution 720p, or HWVA_VIDEO_RESOLUTION=480p for cheap tests.
+  video: { provider: openrouter-video, model: bytedance/seedance-2.5, version: "2.5" }
+  # Alternative, cheaper (480p 4 s 0.17 USD), Ukrainian clips scored SyncNet 1.1-1.7:
+  # video: { provider: openrouter-video, model: bytedance/seedance-2.0-fast, version: "2.0-fast" }
+  # character reference image the video model needs with audio (one per run, ~0.04 USD);
+  # version = model id sent
+  image: { provider: openrouter-image, model: google/gemini-2.5-flash-image, version: google/gemini-2.5-flash-image }
+  # OpenRouter takes media only as public https URLs: free host, files deleted after ~3 h.
+  # uguu (litterbox answered 500 to uploads for hours that day); or: litterbox
+  media_host: uguu
+  judge: { provider: gemini, model: gemini-3.8-flash, version: "gemini-3.8-flash" }
+
+# Money cap per run, every profile: env HWVA_MAX_COST_USD, else a profile's `max_cost_usd: <usd>`,
+# else 3.0 USD. Checked before every paid image/video call.
+
+real-no-video:  # everything real except video (fake testsrc): runs before a video key exists
+  llm:   { provider: gemini, model: gemini-3.8-flash, version: "gemini-3.8-flash" }
+  tts:   { provider: elevenlabs-tts, model: eleven_v4, version: eleven_v4 }
+  stt:   { provider: scribe, model: scribe, version: scribe_v2 }
+  video: { provider: fake, model: testsrc, version: "1" }
+  judge: { provider: gemini, model: gemini-3.8-flash, version: "gemini-3.8-flash" }

@@ -1,0 +1,32 @@
+# Voice persona -> concrete TTS voice (specs/voice.md, "Voice persona").
+# TTS provider name (as in profiles.yaml) -> "<gender>-<age>" -> {voice, style}.
+# `style` goes to the provider's style field (Gemini: speech_metadata.style), NEVER into the
+# spoken text; null -> the provider's default style.
+# Missing persona -> same gender adult, then any entry (the voice stage records the assumption).
+
+fake:  # FakeTts ignores `voice`; its sine pitch follows the persona (names document the pitch)
+  male-adult:     { voice: sine-140hz, style: null }
+  female-adult:   { voice: sine-220hz, style: null }
+  male-teen:      { voice: sine-200hz, style: null }
+  female-teen:    { voice: sine-280hz, style: null }
+  male-child:     { voice: sine-300hz, style: null }
+  female-child:   { voice: sine-380hz, style: null }
+  male-elderly:   { voice: sine-120hz, style: null }
+  female-elderly: { voice: sine-200hz, style: null }
+
+gemini-tts:  # voices verified by a listening test
+  male-adult:     { voice: Puck,   style: "a cheerful man in his thirties" }
+  female-adult:   { voice: Aoede,  style: "a warm, friendly woman in her thirties" }
+  male-teen:      { voice: Fenrir, style: "an energetic teenage boy" }
+  female-teen:    { voice: Leda,   style: "a lively teenage girl" }
+  male-child:     { voice: Puck,   style: "an excited 7-year-old boy with a high, childlike voice" }
+  female-child:   { voice: Leda,   style: "an excited 7-year-old girl" }
+  male-elderly:   { voice: Charon, style: "a calm old man in his seventies, slow and slightly raspy" }
+  female-elderly: { voice: Aoede,  style: "a gentle old woman in her seventies, slow and soft" }
+
+elevenlabs-tts:  # premade voice ids (free tier: library voices -> 402); the API has no style field
+  # no child / elderly premade voices on the free tier: those fall back to the same gender adult
+  male-adult:   { voice: bIHbv24MWmeRgasZH58o, style: null }  # Will
+  female-adult: { voice: EXAVITQu4vr4xnSDxMaL, style: null }  # Sarah
+  male-teen:    { voice: SOYHLrjzK2X1ezoPC6cr, style: null }  # Harry
+  female-teen:  { voice: FGY2WhTYpPnrIDTdsKH5, style: null }  # Laura

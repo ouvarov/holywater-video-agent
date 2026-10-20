@@ -1,0 +1,22 @@
+# Eval idea set (specs/eval.md). `uv run eval` runs each idea once, non-interactively:
+#   idea -> manifest.idea, line -> params["line"] (like --line), lang -> params["lang"] (like --lang).
+# Rules: no digits anywhere (numbers in words); Ukrainian lines are grammatically gendered so the
+# voice persona (script: gender/age, voice: persona -> config/voices.yaml) is exercised.
+ideas:
+  - id: uk-quoted
+    kind: uk_quoted  # female line: «сама», «спекла» -> female voice
+    idea: 'Бабуся на кухні дістає з печі пиріг і гордо каже: «Та я сама все спекла, ще й тісто сама місила!»'
+
+  - id: en-line
+    kind: en_line  # line given like --line, English
+    idea: A tired office worker stares at a coffee machine that refuses to work.
+    line: Just one cup of coffee, that is all I ask.
+    lang: en
+
+  - id: no-line
+    kind: no_line  # no quotes, no line: the LLM writes it (line_source=generated)
+    idea: Рудий кіт сидить на підвіконні й дивиться на дощ за вікном.
+
+  - id: long-line
+    kind: long_line  # male line («сам», «переписав»), ~21 s at 0.4 s/word: near the 30 s total
+    idea: 'Молодий актор виходить на сцену перед повною залою і каже: «Я цілий тиждень готувався до цього дня, я сам переписав промову тричі, вивчив кожне слово напам''ять, і ось тепер, коли зала нарешті повна, я стою тут, дивлюся на вас і розумію, що найважливіше вже сказано: дякую, що прийшли, бо без вас я б ніколи не наважився вийти на цю велику сцену сьогодні ввечері.»'
